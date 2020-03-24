@@ -1,40 +1,27 @@
-const express = require('express'),
-  router = express.Router(),
-  { asyncErrorHandler } = require('../middleware'),
-  { register, login } = require('../controllers/auth'),
-  { check } = require('express-validator');
+const passport = require('passport');
 
-//@Route    POST '/api/auth/register'
-//@desc     Register the user
-//@access   Public
-
-router.post(
-  '/register',
-  [
-    check('name', 'Name is required !!')
-      .not()
-      .isEmpty(),
-    check('email', 'Enter valid email').isEmail(),
-    check('password', 'Enter a password with length 4 or more').isLength({
-      min: 4
+module.exports = app => {
+  app.get(
+    '/auth/google',
+    passport.authenticate('google', {
+      scope: ['profile', 'email']
     })
-  ],
-  asyncErrorHandler(register)
-);
+  );
 
-//@Route    POST '/api/auth/login'
-//@desc     login to website
-//@access   Public
+  app.get(
+    '/auth/google/callback',
+    passport.authenticate('google'),
+    (req, res) => {
+      res.redirect('/surveys');
+    }
+  );
 
-router.post(
-  '/login',
-  [
-    check('email', 'Enter a valid email').isEmail(),
-    check('name', 'Nickname is required to signin!!').exists(),
-    check('password', 'please enter a password').exists()
-  ],
-  asyncErrorHandler(login)
-);
+  app.get('/api/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
+  });
 
-
-module.exports = router;
+  app.get('/api/current_user', (req, res) => {
+    res.send(req.user);
+  });
+};

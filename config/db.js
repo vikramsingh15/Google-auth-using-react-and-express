@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const dbUrl = process.env.dbUrl || 'mongodb://localhost/google';
+const dbUrl = process.env.dbUrl || 'mongodb://localhost/google2';
 
 const connectDb = async () => {
   try {
